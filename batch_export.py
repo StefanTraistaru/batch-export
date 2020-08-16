@@ -110,7 +110,7 @@ class BatchExporter(inkex.Effect):
             with tempfile.NamedTemporaryFile() as temporary_file:
                 # Create a new file in which we delete unwanted layers to keep the exported file size to a minimum
                 temporary_file_path = temporary_file.name
-                logging.debug("  Preparing layer [{},{}]".format(layer_id, layer_label))
+                logging.debug("  Preparing layer [{}, {}]".format(layer_id, layer_label))
                 self.manage_layers(temporary_file_path, show_layer_ids)
 
                 # Construct the name of the exported file
@@ -126,10 +126,10 @@ class BatchExporter(inkex.Effect):
                 # Check if the file exists. If not, export it.
                 destination_path = os.path.join(options.output_path, file_name)
                 if not options.overwrite_files and os.path.exists(destination_path):
-                    logging.debug("  File already exists: [{},{}] as {}\n".format(layer_id, layer_label, file_name))
+                    logging.debug("  File already exists: [{}, {}] as {}\n".format(layer_id, layer_label, file_name))
                     continue
 
-                logging.debug("  Exporting [{},{}] as {}\n".format(layer_id, layer_label, file_name))
+                logging.debug("  Exporting [{}, {}] as {}\n".format(layer_id, layer_label, file_name))
                 if options.export_type == 'svg':
                     self.exportToSVG(temporary_file_path, destination_path)
                 else:
@@ -153,12 +153,9 @@ class BatchExporter(inkex.Effect):
             layer_label = layer.attrib["{%s}label" % layer.nsmap['inkscape']]
 
             # Display/Delete layers
-            if layer_id in show_layer_ids:
-                layer.attrib['style'] = 'display:inline'
-                logging.debug("    Visible : [{},{}]".format(layer_id, layer_label))
-            else:
+            if layer_id not in show_layer_ids:
                 layer.getparent().remove(layer)
-                logging.debug("    Deleting: [{},{}]".format(layer_id, layer_label))
+                logging.debug("    Deleting: [{}, {}]".format(layer_id, layer_label))
 
         doc.write(temporary_file_path)
 
@@ -172,9 +169,10 @@ class BatchExporter(inkex.Effect):
                 continue
 
             # Skipping hidden layers
-            if skip_hidden_layers and 'display:none' in layer.attrib['style']:
-                logging.debug("  Skip: [{}, {}]".format(layer.attrib["id"], layer.attrib[label_attrib_name]))
-                continue
+            if skip_hidden_layers and 'style' in layer.attrib:
+                if 'display:none' in layer.attrib['style']:
+                    logging.debug("  Skip: [{}, {}]".format(layer.attrib["id"], layer.attrib[label_attrib_name]))
+                    continue
 
             layer_id = layer.attrib["id"]
             layer_label = layer.attrib[label_attrib_name]
@@ -192,14 +190,14 @@ class BatchExporter(inkex.Effect):
         logging.debug("  TOTAL NUMBER OF LAYERS: {}\n".format(len(layers)))
         return layers
 
-    def exportToSVG(self, temporary_file_path, output_path):
+    def exportToSVG(self, svg_path, output_path):
         args = [
             'inkscape',
             '--vacuum-defs',
             '--export-area-page',
             '--export-plain-svg',
             '--export-filename=%s' % output_path,
-            temporary_file_path
+            svg_path
         ]
 
         try:
@@ -210,13 +208,14 @@ class BatchExporter(inkex.Effect):
             inkex.errormsg('Error while exporting file {}.'.format(output_path))
             exit()
 
-    def exportToPNG(self, temporary_file_path, output_path):
+    def exportToPNG(self, svg_path, output_path):
+        # TODO: PNG export DPI
         args = [
             'inkscape',
             '--vacuum-defs',
             '--export-area-page',
             '--export-filename=%s' % output_path,
-            temporary_file_path
+            svg_path
         ]
 
         try:
