@@ -108,11 +108,6 @@ class BatchExporter(inkex.Effect):
                 os.makedirs(os.path.join(options.output_path))
 
             with tempfile.NamedTemporaryFile() as temporary_file:
-                # Create a new file in which we delete unwanted layers to keep the exported file size to a minimum
-                temporary_file_path = temporary_file.name
-                logging.debug("  Preparing layer [{}, {}]".format(layer_id, layer_label))
-                self.manage_layers(temporary_file_path, show_layer_ids)
-
                 # Construct the name of the exported file
                 if options.use_text_prefix and options.use_number_prefix:
                     file_name = "{}_{}_{}.{}".format(str(counter).zfill(options.number_max_digits), options.text_prefix, layer_label, options.export_type)
@@ -126,8 +121,13 @@ class BatchExporter(inkex.Effect):
                 # Check if the file exists. If not, export it.
                 destination_path = os.path.join(options.output_path, file_name)
                 if not options.overwrite_files and os.path.exists(destination_path):
-                    logging.debug("  File already exists: [{}, {}] as {}\n".format(layer_id, layer_label, file_name))
+                    logging.debug("  File already exists: {}\n".format(file_name))
                     continue
+
+                # Create a new file in which we delete unwanted layers to keep the exported file size to a minimum
+                temporary_file_path = temporary_file.name
+                logging.debug("  Preparing layer [{}, {}]".format(layer_id, layer_label))
+                self.manage_layers(temporary_file_path, show_layer_ids)
 
                 logging.debug("  Exporting [{}, {}] as {}\n".format(layer_id, layer_label, file_name))
                 if options.export_type == 'svg':
