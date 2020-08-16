@@ -1,8 +1,12 @@
-# Batch export
+<p align="center">
+    <img alt="oss image" src="https://api.pcloud.com/getpubthumb?code=XZ1IRokZoGrYzLoLiiht2u8Rl38BHbMW2foV&linkpassword=undefined&size=1024x1024&crop=0&type=auto" height="300px" width="300px">
+</p>
+
+<h1 align="center">Batch export extension for Inkscape</h1>
 
 This is an Inkscape extension that allows you to export each layer to a single file.
 
-![Inkscape view](screenshots/inkscape_view.png)
+![Inkscape view](images/inkscape_view.png)
 
 ## Install
 Download this project and copy the extension files (`batch_export.inx` and `batch_export.py`) to the config path of your Inkscape installation.
@@ -22,7 +26,7 @@ Depending on your operating system, this path will vary. If none of the above wo
 ## Usage
 The extension can be found in the *Extensions* menu, *Export* submenu.
 
-![Extension view](screenshots/extension-view.png)
+![Extension view](images/extension-view.png)
 
 ### Export parameters
 
@@ -65,7 +69,7 @@ You can turn on this option and the extension will create a log file at the log 
 ## Result
 This is the result of using the extension to export the layers of the file shown in the first screenshot. In that file, I have one background layer containing a red rectangle, one testing layer that is hidden and five layers that I want to export.
 
-![Exported files](screenshots/exported_files.png)
+![Exported files](images/exported_files.png)
 
 **Disclosure:** Each exported file will only contain the data corresponding to that specific layer and background layers only.
 
