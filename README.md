@@ -79,3 +79,9 @@ This extension will keep the exported files to minimum size and keep your data p
 
 ## Notes
 So far, I have only tested this extension in Inkscape 1.0, on Linux. I used the flatpak version, but I think it will work with the one from your distribution package manager as well. I don't know if it will work on Windows or macOS, yet.
+
+## 🙌 Become a supporter
+Help in maintaining this project by giving me a cup of coffee :)
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JDW4SPTJACYSJ&source=url)
+
