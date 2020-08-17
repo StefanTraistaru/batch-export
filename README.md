@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="oss image" src="https://api.pcloud.com/getpubthumb?code=XZ1IRokZoGrYzLoLiiht2u8Rl38BHbMW2foV&linkpassword=undefined&size=1024x1024&crop=0&type=auto" height="300px" width="300px">
+    <img alt="logo" src="images/Logo.png" height="300px" width="300px">
 </p>
 
 <h1 align="center">Batch export extension for Inkscape</h1>
