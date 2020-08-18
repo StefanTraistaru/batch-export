@@ -1,14 +1,17 @@
 <p align="center">
-    <img alt="logo" src="images/Logo.png" height="300px" width="300px">
+    <img alt="logo" src="images/banner.png">
 </p>
 
-<h1 align="center">Batch export extension for Inkscape</h1>
-
-This is an Inkscape extension that allows you to export each layer to a single file.
+This extension will help you export your work easier:
+- Export each layer as a separate file
+- Choose which layers to export
+- Automated file naming
+- Supports multiple export file formats
+- Configure background layers
 
 ![Inkscape view](images/inkscape_view.png)
 
-## Install
+# Install
 Download this project and copy the extension files (`batch_export.inx` and `batch_export.py`) to the config path of your Inkscape installation.
 
 On Linux, the path may be:
@@ -23,10 +26,10 @@ If you installed the flatpak version:
 
 Depending on your operating system, this path will vary. If none of the above work, try searching for "Inkscape config path" for your OS.
 
-## Usage
-The extension can be found in the *Extensions* menu, *Export* submenu.
+# Usage
+After the extension is installed, it can be found in the *Extensions* menu, *Export* submenu.
 
-![Extension view](images/extension-view.png)
+<img align="right" width="400px" src="images/extension-view.png">
 
 ### Export parameters
 
@@ -66,8 +69,8 @@ Ex. [fixed] Background
 ### Logging
 You can turn on this option and the extension will create a log file at the log file path. This may be useful if you try to debug the extension or see a more in-depth log of its actions, although I recommend checking the source code for that :).
 
-## Result
-This is the result of using the extension to export the layers of the file shown in the first screenshot. In that file, I have one background layer containing a red rectangle, one testing layer that is hidden and five layers that I want to export.
+# Result
+This is the result of using the extension to export the layers of the [file](test/batch-export-test.svg) shown in the first screenshot. In that file, I have one background layer containing a red rectangle, one testing layer that is hidden and five layers that I want to export.
 
 ![Exported files](images/exported_files.png)
 
@@ -75,12 +78,15 @@ This is the result of using the extension to export the layers of the file shown
 
 **Explanation:** An SVG file can contain data that is not visible when displayed as an image. There can be multiple hidden layers in the file, that will not show up when opened with an image viewer, but still take up space in the file. For example, you cand have a file with two layers, layer1 containing a rectangle and layer2 containing a circle. If you hide layer1, save the file as an SVG and open it with an image viewer, only the circle will be displayed, however, the layer containing the rectangle is still in the file, but the image viewer knows not to display it. That means, not only that your file will have a size bigger than it needs to, but will also contain private data that you may not wish to save or share with others.
 
-This extension will keep the exported files to minimum size and keep your data private by saving only the visible data of your work.
+This extension will keep the exported files to **minimum size** and keep **your data private** by exporting only the visible data of your work.
 
-## Notes
+# Notes
 So far, I have only tested this extension in Inkscape 1.0, on Linux. I used the flatpak version, but I think it will work with the one from your distribution package manager as well. I don't know if it will work on Windows or macOS, yet.
 
-## 🙌 Become a supporter
+# License
+This project is licensed under the [MIT](https://github.com/StefanTraistaru/batch-export/blob/master/LICENSE.md) license.
+
+# 🙌 Become a supporter
 Help in maintaining this project by giving me a cup of coffee :)
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JDW4SPTJACYSJ&source=url)
