@@ -121,6 +121,8 @@ class BatchExporter(inkex.Effect):
             destination_path = os.path.join(options.output_path, file_name)
             if not options.overwrite_files and os.path.exists(destination_path):
                 logging.debug("  File already exists: {}\n".format(file_name))
+                # TODO: Should this be the expected functionality of this scenario?
+                counter += 1
                 continue
 
             # Create a new file in which we delete unwanted layers to keep the exported file size to a minimum
