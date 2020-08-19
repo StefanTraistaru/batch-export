@@ -107,33 +107,36 @@ class BatchExporter(inkex.Effect):
             if not os.path.exists(os.path.join(options.output_path)):
                 os.makedirs(os.path.join(options.output_path))
 
-            with tempfile.NamedTemporaryFile() as temporary_file:
-                # Construct the name of the exported file
-                if options.use_text_prefix and options.use_number_prefix:
-                    file_name = "{}_{}_{}.{}".format(str(counter).zfill(options.number_max_digits), options.text_prefix, layer_label, options.export_type)
-                elif options.use_text_prefix:
-                    file_name = "{}_{}.{}".format(options.text_prefix, layer_label, options.export_type)
-                elif options.use_number_prefix:
-                    file_name = "{}_{}.{}".format(str(counter).zfill(options.number_max_digits), layer_label, options.export_type)
-                else:
-                    file_name = "{}.{}".format(layer_label, options.export_type)
+            # Construct the name of the exported file
+            if options.use_text_prefix and options.use_number_prefix:
+                file_name = "{}_{}_{}.{}".format(str(counter).zfill(options.number_max_digits), options.text_prefix, layer_label, options.export_type)
+            elif options.use_text_prefix:
+                file_name = "{}_{}.{}".format(options.text_prefix, layer_label, options.export_type)
+            elif options.use_number_prefix:
+                file_name = "{}_{}.{}".format(str(counter).zfill(options.number_max_digits), layer_label, options.export_type)
+            else:
+                file_name = "{}.{}".format(layer_label, options.export_type)
 
-                # Check if the file exists. If not, export it.
-                destination_path = os.path.join(options.output_path, file_name)
-                if not options.overwrite_files and os.path.exists(destination_path):
-                    logging.debug("  File already exists: {}\n".format(file_name))
-                    continue
+            # Check if the file exists. If not, export it.
+            destination_path = os.path.join(options.output_path, file_name)
+            if not options.overwrite_files and os.path.exists(destination_path):
+                logging.debug("  File already exists: {}\n".format(file_name))
+                # TODO: Should this be the expected functionality of this scenario?
+                counter += 1
+                continue
 
-                # Create a new file in which we delete unwanted layers to keep the exported file size to a minimum
-                temporary_file_path = temporary_file.name
-                logging.debug("  Preparing layer [{}, {}]".format(layer_id, layer_label))
-                self.manage_layers(temporary_file_path, show_layer_ids)
+            # Create a new file in which we delete unwanted layers to keep the exported file size to a minimum
+            logging.debug("  Preparing layer [{}, {}]".format(layer_id, layer_label))
+            temporary_file_path = self.manage_layers("", show_layer_ids)
 
-                logging.debug("  Exporting [{}, {}] as {}\n".format(layer_id, layer_label, file_name))
-                if options.export_type == 'svg':
-                    self.exportToSVG(temporary_file_path, destination_path)
-                else:
-                    self.exportToPNG(temporary_file_path, destination_path)
+            logging.debug("  Exporting [{}, {}] as {}\n".format(layer_id, layer_label, file_name))
+            if options.export_type == 'svg':
+                self.exportToSVG(temporary_file_path, destination_path)
+            else:
+                self.exportToPNG(temporary_file_path, destination_path)
+
+            # Clean up - delete the temporary file we have created
+            os.remove(temporary_file_path)
 
             counter += 1
             if options.use_number_prefix and counter > options.max_number:
@@ -157,7 +160,11 @@ class BatchExporter(inkex.Effect):
                 layer.getparent().remove(layer)
                 logging.debug("    Deleting: [{}, {}]".format(layer_id, layer_label))
 
-        doc.write(temporary_file_path)
+        # Save the data in a temporary file
+        with tempfile.NamedTemporaryFile(delete=False) as temporary_file:
+            logging.debug("    Creating temp file {}".format(temporary_file.name))
+            doc.write(temporary_file.name)
+            return temporary_file.name
 
     def get_layers(self, file, skip_hidden_layers):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
