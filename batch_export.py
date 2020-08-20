@@ -94,7 +94,7 @@ class BatchExporter(inkex.Effect):
         logging.debug(options)
 
         # Get the layers from the current file
-        layers = self.get_layers(options.current_file, options.skip_hidden_layers)
+        layers = self.get_layers(options.current_file, options.skip_hidden_layers, options.use_background_layers)
 
         # For each layer export a file
         for (layer_id, layer_label, layer_type) in layers:
@@ -166,7 +166,7 @@ class BatchExporter(inkex.Effect):
             doc.write(temporary_file.name)
             return temporary_file.name
 
-    def get_layers(self, file, skip_hidden_layers):
+    def get_layers(self, file, skip_hidden_layers, use_background_layers):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
         layers = []
 
@@ -185,7 +185,7 @@ class BatchExporter(inkex.Effect):
             layer_label = layer.attrib[label_attrib_name]
 
             # Checking for background (fixed) layers
-            if layer_label.lower().startswith("[fixed] "):
+            if use_background_layers and layer_label.lower().startswith("[fixed] "):
                 layer_type = "fixed"
                 layer_label = layer_label[8:]
             else:
