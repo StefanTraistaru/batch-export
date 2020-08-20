@@ -54,6 +54,7 @@
     <page name="help" gui-text="Help">
       <label appearance="header">Logging:</label>
       <param name="use-logging" type="bool" gui-text="Use logging" indent="1">false</param>
+      <param name="overwrite-log" type="bool" gui-text="Overwrite existing log file" indent="1">false</param>
       <label indent="1">Log file path:</label>
       <param name="log-path" type="path" mode="folder" gui-text="" indent="1">~/</param>
       <separator/>

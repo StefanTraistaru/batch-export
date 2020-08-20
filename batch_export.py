@@ -31,7 +31,12 @@ class Options():
         self.use_logging = self._str_to_bool(batch_exporter.options.use_logging)
         if self.use_logging:
             self.log_path = os.path.expanduser(batch_exporter.options.log_path)
-            logging.basicConfig(filename=os.path.join(self.log_path, 'batch_export.log'),level=logging.DEBUG)
+            self.overwrite_log = self._str_to_bool(batch_exporter.options.overwrite_log)
+            log_file_name = os.path.join(self.log_path, 'batch_export.log')
+            log_file_mode = "a"
+            if self.overwrite_log:
+                log_file_mode = "w"
+            logging.basicConfig(filename=log_file_name, filemode=log_file_mode, level=logging.DEBUG)
 
     def _str_to_bool(self, str):
         if str.lower() == 'true':
@@ -53,6 +58,7 @@ class Options():
             print += "Name template: {}".format(self.name_template)
 
         print += "Use logging: {}\n".format(self.use_logging)
+        print += "Overwrite log: {}\n".format(self.overwrite_log)
         if self.use_logging:
             print += "Log path: {}\n".format(self.log_path)
 
@@ -78,6 +84,7 @@ class BatchExporter(inkex.Effect):
 
         # Log
         self.arg_parser.add_argument("--use-logging", action="store", type=str, dest="use_logging", default=False, help="")
+        self.arg_parser.add_argument("--overwrite-log", action="store", type=str, dest="overwrite_log", default=False, help="")
         self.arg_parser.add_argument("--log-path", action="store", type=str, dest="log_path", default="~/", help="")
 
         # HACK - the script is called with a "--tab controls" option as an argument from the notebook param in the inx file.
@@ -111,7 +118,7 @@ class BatchExporter(inkex.Effect):
             else:
                 file_name = self.get_advanced_name(options.name_template, counter, layer_label)
             file_name = "{}.{}".format(file_name, options.export_type)
-            logging.debug("File name: {}".format(file_name))
+            logging.debug("  File name: {}".format(file_name))
 
             # Check if the file exists. If not, export it.
             destination_path = os.path.join(options.output_path, file_name)
