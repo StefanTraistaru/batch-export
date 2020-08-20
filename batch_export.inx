@@ -44,8 +44,9 @@
       <param name="name-template" type="string" gui-text="" indent="1">[LAYER_NAME]</param>
       <param name="help" type="description" indent="1">Tags you can use:</param>
       <param name="help" type="description" indent="2">- [LAYER_NAME] - replaced by the name of each layer</param>
+      <param name="help" type="description" indent="2">- [NUM] - replaced by increasing numbers [1 ...]</param>
       <param name="help" type="description" indent="2">- [NUM-1], [NUM-2], [NUM-3], [NUM-4] and [NUM-5]</param>
-      <param name="help" type="description" indent="3">ex. [NUM-2] - replaced by increasing numbers in the range [00 .. 99]</param>
+      <param name="help" type="description" indent="3">ex. [NUM-2] - replaced by increasing numbers with 2 digits [00 .. 99]</param>
       <param name="help" type="description" indent="2">- Any text you want.</param>
       <param name="help" type="description" indent="3">ex. design [LAYER_NAME]</param>
     </page>

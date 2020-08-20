@@ -28,10 +28,6 @@ class Options():
             self.naming_scheme = "advanced"
             self.name_template = batch_exporter.options.name_template
 
-        self.check_counter = False
-        if self.naming_scheme == "simple" and self.use_number_prefix:
-            self.check_counter = True
-
         self.use_logging = self._str_to_bool(batch_exporter.options.use_logging)
         if self.use_logging:
             self.log_path = os.path.expanduser(batch_exporter.options.log_path)
@@ -139,23 +135,17 @@ class BatchExporter(inkex.Effect):
             os.remove(temporary_file_path)
 
             counter += 1
-            if options.check_counter and counter > 99:
-                logging.debug("Exported more than 99 layers with simple naming scheme.")
-                inkex.errormsg("You tried to export more than 99 layers. The number prefix for the simple naming scheme can range between 01 and 99. " \
-                    "For a more customized naming system I suggest using the advanced naming scheme.\n" \
-                    "Check out the README for a more detailed explanation on how to use it.\n" \
-                    "(https://github.com/StefanTraistaru/batch-export)")
-                break
 
     def get_simple_name(self, use_number_prefix, counter, layer_label):
         if use_number_prefix:
-            return "{}_{}".format(str(counter).zfill(2), layer_label)
+            return "{}_{}".format(counter, layer_label)
 
         return layer_label
 
     def get_advanced_name(self, template_name, counter, layer_label):
         file_name = template_name
         file_name = file_name.replace('[LAYER_NAME]', layer_label)
+        file_name = file_name.replace("[NUM]", str(counter))
         file_name = file_name.replace("[NUM-1]", str(counter).zfill(1))
         file_name = file_name.replace("[NUM-2]", str(counter).zfill(2))
         file_name = file_name.replace("[NUM-3]", str(counter).zfill(3))
