@@ -28,6 +28,10 @@ class Options():
             self.number_max_digits = batch_exporter.options.number_max_digits
             self.max_number = self.number_max_digits * 10 - 1
 
+        self.use_custom_delimiter = self._str_to_bool(batch_exporter.options.use_custom_delimiter)
+        if self.use_custom_delimiter:
+            self.custom_delimiter = batch_exporter.options.custom_delimiter
+
         self.use_background_layers = self._str_to_bool(batch_exporter.options.use_background_layers)
         self.skip_hidden_layers = self._str_to_bool(batch_exporter.options.skip_hidden_layers)
         self.overwrite_files = self._str_to_bool(batch_exporter.options.overwrite_files)
@@ -74,6 +78,9 @@ class BatchExporter(inkex.Effect):
         self.arg_parser.add_argument("--prefix-text", action="store", type=str, dest="text_prefix", default="prefix", help="")
         self.arg_parser.add_argument("--use-number-prefix", action="store", type=str, dest="use_number_prefix", default=False, help="")
         self.arg_parser.add_argument("--number-max-digits", action="store", type=int, dest="number_max_digits", default=3, help="")
+        self.arg_parser.add_argument("--use-custom-delimiter", action="store", type=str, dest="use_custom_delimiter", default=False, help="")
+        self.arg_parser.add_argument("--custom-delimiter", action="store", type=str, dest="custom_delimiter", default="_", help="")
+
         # Other
         self.arg_parser.add_argument("--use-background-layers", action="store", type=str, dest="use_background_layers", default=False, help="")
         self.arg_parser.add_argument("--skip-hidden-layers", action="store", type=str, dest="skip_hidden_layers", default=False, help="")
@@ -108,12 +115,29 @@ class BatchExporter(inkex.Effect):
                 os.makedirs(os.path.join(options.output_path))
 
             # Construct the name of the exported file
+            delimiter = "_"
+            if options.use_custom_delimiter:
+                delimiter = options.custom_delimiter
+
             if options.use_text_prefix and options.use_number_prefix:
-                file_name = "{}_{}_{}.{}".format(str(counter).zfill(options.number_max_digits), options.text_prefix, layer_label, options.export_type)
+                # file_name = "{}_{}_{}.{}".format(str(counter).zfill(options.number_max_digits), options.text_prefix, layer_label, options.export_type)
+                file_name = "{}{}{}{}{}.{}".format(str(counter).zfill(options.number_max_digits),
+                                                   delimiter,
+                                                   options.text_prefix,
+                                                   delimiter,
+                                                   layer_label, options.export_type)
             elif options.use_text_prefix:
-                file_name = "{}_{}.{}".format(options.text_prefix, layer_label, options.export_type)
+                # file_name = "{}_{}.{}".format(options.text_prefix, layer_label, options.export_type)
+                file_name = "{}{}{}.{}".format(options.text_prefix,
+                                              delimiter,
+                                              layer_label,
+                                              options.export_type)
             elif options.use_number_prefix:
-                file_name = "{}_{}.{}".format(str(counter).zfill(options.number_max_digits), layer_label, options.export_type)
+                # file_name = "{}_{}.{}".format(str(counter).zfill(options.number_max_digits), layer_label, options.export_type)
+                file_name = "{}{}{}.{}".format(str(counter).zfill(options.number_max_digits),
+                                              delimiter,
+                                              layer_label,
+                                              options.export_type)
             else:
                 file_name = "{}.{}".format(layer_label, options.export_type)
 
