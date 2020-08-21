@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 import sys
-sys.path.append('/usr/share/inkscape/extensions')
 import inkex
 import os
 import subprocess
@@ -17,7 +16,7 @@ class Options():
         self.export_type = 'svg'
         if batch_exporter.options.export_type == '2':
             self.export_type = 'png'
-        self.output_path = os.path.expanduser(batch_exporter.options.path)
+        self.output_path = os.path.normpath(batch_exporter.options.path)
         self.use_background_layers = self._str_to_bool(batch_exporter.options.use_background_layers)
         self.skip_hidden_layers = self._str_to_bool(batch_exporter.options.skip_hidden_layers)
         self.overwrite_files = self._str_to_bool(batch_exporter.options.overwrite_files)
@@ -33,10 +32,10 @@ class Options():
             self.log_path = os.path.expanduser(batch_exporter.options.log_path)
             self.overwrite_log = self._str_to_bool(batch_exporter.options.overwrite_log)
             log_file_name = os.path.join(self.log_path, 'batch_export.log')
-            log_file_mode = "a"
-            if self.overwrite_log:
-                log_file_mode = "w"
-            logging.basicConfig(filename=log_file_name, filemode=log_file_mode, level=logging.DEBUG)
+            if self.overwrite_log and os.path.exists(log_file_name):
+                logging.basicConfig(filename=log_file_name, filemode="w", level=logging.DEBUG)
+            else:
+                logging.basicConfig(filename=log_file_name, level=logging.DEBUG)
 
     def _str_to_bool(self, str):
         if str.lower() == 'true':
@@ -55,7 +54,7 @@ class Options():
         if self.naming_scheme == 'simple':
             print += "Add number as prefix: {}".format(self.use_number_prefix)
         else:
-            print += "Name template: {}".format(self.name_template)
+            print += "Name template: {}\n".format(self.name_template)
 
         print += "Use logging: {}\n".format(self.use_logging)
         print += "Overwrite log: {}\n".format(self.overwrite_log)
@@ -70,7 +69,7 @@ class BatchExporter(inkex.Effect):
         inkex.Effect.__init__(self)
         # Export parameters
         self.arg_parser.add_argument("--export-type", action="store", type=str, dest="export_type", default="1", help="")
-        self.arg_parser.add_argument("--path", action="store", type=str, dest="path", default="~/", help="export path")
+        self.arg_parser.add_argument("--path", action="store", type=str, dest="path", default="", help="export path")
 
         # Other
         self.arg_parser.add_argument("--use-background-layers", action="store", type=str, dest="use_background_layers", default=False, help="")
@@ -85,7 +84,7 @@ class BatchExporter(inkex.Effect):
         # Log
         self.arg_parser.add_argument("--use-logging", action="store", type=str, dest="use_logging", default=False, help="")
         self.arg_parser.add_argument("--overwrite-log", action="store", type=str, dest="overwrite_log", default=False, help="")
-        self.arg_parser.add_argument("--log-path", action="store", type=str, dest="log_path", default="~/", help="")
+        self.arg_parser.add_argument("--log-path", action="store", type=str, dest="log_path", default="", help="")
 
         # HACK - the script is called with a "--tab controls" option as an argument from the notebook param in the inx file.
         # This argument is not used in the script. It's purpose is to suppress an error when the script is called.
