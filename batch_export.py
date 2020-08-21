@@ -18,24 +18,25 @@ class Options():
         if batch_exporter.options.export_type == '2':
             self.export_type = 'png'
         self.output_path = os.path.expanduser(batch_exporter.options.path)
-
-        self.use_text_prefix = self._str_to_bool(batch_exporter.options.use_text_prefix)
-        if self.use_text_prefix:
-            self.text_prefix = batch_exporter.options.text_prefix
-
-        self.use_number_prefix = self._str_to_bool(batch_exporter.options.use_number_prefix)
-        if self.use_number_prefix:
-            self.number_max_digits = batch_exporter.options.number_max_digits
-            self.max_number = self.number_max_digits * 10 - 1
-
         self.use_background_layers = self._str_to_bool(batch_exporter.options.use_background_layers)
         self.skip_hidden_layers = self._str_to_bool(batch_exporter.options.skip_hidden_layers)
         self.overwrite_files = self._str_to_bool(batch_exporter.options.overwrite_files)
 
+        self.naming_scheme = "simple"
+        self.use_number_prefix = batch_exporter.options.use_number_prefix
+        if batch_exporter.options.naming_scheme == '2':
+            self.naming_scheme = "advanced"
+            self.name_template = batch_exporter.options.name_template
+
         self.use_logging = self._str_to_bool(batch_exporter.options.use_logging)
         if self.use_logging:
             self.log_path = os.path.expanduser(batch_exporter.options.log_path)
-            logging.basicConfig(filename=os.path.join(self.log_path, 'batch_export.log'),level=logging.DEBUG)
+            self.overwrite_log = self._str_to_bool(batch_exporter.options.overwrite_log)
+            log_file_name = os.path.join(self.log_path, 'batch_export.log')
+            log_file_mode = "a"
+            if self.overwrite_log:
+                log_file_mode = "w"
+            logging.basicConfig(filename=log_file_name, filemode=log_file_mode, level=logging.DEBUG)
 
     def _str_to_bool(self, str):
         if str.lower() == 'true':
@@ -47,16 +48,17 @@ class Options():
         print += "Current file: {}\n".format(self.current_file)
         print += "Export type: {}\n".format(self.export_type)
         print += "Path: {}\n".format(self.output_path)
-        print += "Use text prefix: {}\n".format(self.use_text_prefix)
-        if self.use_text_prefix:
-            print += "Text prefix: {}\n".format(self.text_prefix)
-        print += "Use number prefix: {}\n".format(self.use_number_prefix)
-        if self.use_number_prefix:
-            print += "Max digits: {}\n".format(self.number_max_digits)
         print += "Use background layers: {}\n".format(self.use_background_layers)
         print += "Skip hidden layers: {}\n".format(self.skip_hidden_layers)
         print += "Overwrite files: {}\n".format(self.overwrite_files)
+        print += "Naming scheme: {}\n".format(self.naming_scheme)
+        if self.naming_scheme == 'simple':
+            print += "Add number as prefix: {}".format(self.use_number_prefix)
+        else:
+            print += "Name template: {}".format(self.name_template)
+
         print += "Use logging: {}\n".format(self.use_logging)
+        print += "Overwrite log: {}\n".format(self.overwrite_log)
         if self.use_logging:
             print += "Log path: {}\n".format(self.log_path)
 
@@ -69,17 +71,20 @@ class BatchExporter(inkex.Effect):
         # Export parameters
         self.arg_parser.add_argument("--export-type", action="store", type=str, dest="export_type", default="1", help="")
         self.arg_parser.add_argument("--path", action="store", type=str, dest="path", default="~/", help="export path")
-        # Prefix parameters
-        self.arg_parser.add_argument("--use-text-prefix", action="store", type=str, dest="use_text_prefix", default=False, help="")
-        self.arg_parser.add_argument("--prefix-text", action="store", type=str, dest="text_prefix", default="prefix", help="")
-        self.arg_parser.add_argument("--use-number-prefix", action="store", type=str, dest="use_number_prefix", default=False, help="")
-        self.arg_parser.add_argument("--number-max-digits", action="store", type=int, dest="number_max_digits", default=3, help="")
+
         # Other
         self.arg_parser.add_argument("--use-background-layers", action="store", type=str, dest="use_background_layers", default=False, help="")
         self.arg_parser.add_argument("--skip-hidden-layers", action="store", type=str, dest="skip_hidden_layers", default=False, help="")
         self.arg_parser.add_argument("--overwrite-files", action="store", type=str, dest="overwrite_files", default=False, help="")
+
+        # Naming parameters
+        self.arg_parser.add_argument("--naming-scheme", action="store", type=str, dest="naming_scheme", default="1", help="")
+        self.arg_parser.add_argument("--use-number-prefix", action="store", type=str, dest="use_number_prefix", default=False, help="")
+        self.arg_parser.add_argument("--name-template", action="store", type=str, dest="name_template", default="[LAYER_NAME]", help="")
+
         # Log
         self.arg_parser.add_argument("--use-logging", action="store", type=str, dest="use_logging", default=False, help="")
+        self.arg_parser.add_argument("--overwrite-log", action="store", type=str, dest="overwrite_log", default=False, help="")
         self.arg_parser.add_argument("--log-path", action="store", type=str, dest="log_path", default="~/", help="")
 
         # HACK - the script is called with a "--tab controls" option as an argument from the notebook param in the inx file.
@@ -94,7 +99,7 @@ class BatchExporter(inkex.Effect):
         logging.debug(options)
 
         # Get the layers from the current file
-        layers = self.get_layers(options.current_file, options.skip_hidden_layers)
+        layers = self.get_layers(options.current_file, options.skip_hidden_layers, options.use_background_layers)
 
         # For each layer export a file
         for (layer_id, layer_label, layer_type) in layers:
@@ -108,14 +113,12 @@ class BatchExporter(inkex.Effect):
                 os.makedirs(os.path.join(options.output_path))
 
             # Construct the name of the exported file
-            if options.use_text_prefix and options.use_number_prefix:
-                file_name = "{}_{}_{}.{}".format(str(counter).zfill(options.number_max_digits), options.text_prefix, layer_label, options.export_type)
-            elif options.use_text_prefix:
-                file_name = "{}_{}.{}".format(options.text_prefix, layer_label, options.export_type)
-            elif options.use_number_prefix:
-                file_name = "{}_{}.{}".format(str(counter).zfill(options.number_max_digits), layer_label, options.export_type)
+            if options.naming_scheme == 'simple':
+                file_name = self.get_simple_name(options.use_number_prefix, counter, layer_label)
             else:
-                file_name = "{}.{}".format(layer_label, options.export_type)
+                file_name = self.get_advanced_name(options.name_template, counter, layer_label)
+            file_name = "{}.{}".format(file_name, options.export_type)
+            logging.debug("  File name: {}".format(file_name))
 
             # Check if the file exists. If not, export it.
             destination_path = os.path.join(options.output_path, file_name)
@@ -139,14 +142,23 @@ class BatchExporter(inkex.Effect):
             os.remove(temporary_file_path)
 
             counter += 1
-            if options.use_number_prefix and counter > options.max_number:
-                logging.debug('With a max digit number set to {} the maximum number of SVGs that can be exported with an automated number prefix is {}. '\
-                               'In this file there are more layers to export than the maximum number. Only the first {} layers have been exported. '\
-                               'Increase the max digit number to be able to export all of them.'.format(options.number_max_digits, options.max_number, options.max_number))
-                inkex.errormsg('With a max digit number set to {} the maximum number of SVGs that can be exported with an automated number prefix is {}. '\
-                               'In this file there are more layers to export than the maximum number. Only the first {} layers have been exported. '\
-                               'Increase the max digit number to be able to export all of them.'.format(options.number_max_digits, options.max_number, options.max_number))
-                break
+
+    def get_simple_name(self, use_number_prefix, counter, layer_label):
+        if use_number_prefix:
+            return "{}_{}".format(counter, layer_label)
+
+        return layer_label
+
+    def get_advanced_name(self, template_name, counter, layer_label):
+        file_name = template_name
+        file_name = file_name.replace('[LAYER_NAME]', layer_label)
+        file_name = file_name.replace("[NUM]", str(counter))
+        file_name = file_name.replace("[NUM-1]", str(counter).zfill(1))
+        file_name = file_name.replace("[NUM-2]", str(counter).zfill(2))
+        file_name = file_name.replace("[NUM-3]", str(counter).zfill(3))
+        file_name = file_name.replace("[NUM-4]", str(counter).zfill(4))
+        file_name = file_name.replace("[NUM-5]", str(counter).zfill(5))
+        return file_name
 
     def manage_layers(self, temporary_file_path, show_layer_ids):
         # Create a copy of the current document
@@ -166,7 +178,7 @@ class BatchExporter(inkex.Effect):
             doc.write(temporary_file.name)
             return temporary_file.name
 
-    def get_layers(self, file, skip_hidden_layers):
+    def get_layers(self, file, skip_hidden_layers, use_background_layers):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
         layers = []
 
@@ -185,7 +197,7 @@ class BatchExporter(inkex.Effect):
             layer_label = layer.attrib[label_attrib_name]
 
             # Checking for background (fixed) layers
-            if layer_label.lower().startswith("[fixed] "):
+            if use_background_layers and layer_label.lower().startswith("[fixed] "):
                 layer_type = "fixed"
                 layer_label = layer_label[8:]
             else:
