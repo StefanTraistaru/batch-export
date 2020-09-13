@@ -116,7 +116,7 @@ This extension will keep the exported files to **minimum size** and keep **your 
 
 # Notes
 This extension works with **Inkscape 1.0**.
-* ✔️ **Linux** - I have tested it on Linux, using the flatpak version but I think it will work with the one from your distribution package manager as well.
+* ✔️ **Linux** - I have tested it on Linux, using both the version from the ubuntu ppa and the flatpak one.
 * ✔️ **Windows 10** - I have also tested it on Windows 10 with both the version from the Inkscape website and the one from the Microsoft Store.
 * ❓ **macOS** - I do not own any Apple devices, so I cannot tell you if it will work on macOS, although I don't think there might be any compatibility issues. If you have a macOS device, please try it and let me know.
 
