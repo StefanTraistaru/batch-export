@@ -13,20 +13,29 @@ class Options():
     def __init__(self, batch_exporter):
         self.current_file = batch_exporter.options.input_file
 
-        self.export_type = 'svg'
-        if batch_exporter.options.export_type == '2':
-            self.export_type = 'png'
+        # Controls page
+        self.export_type = batch_exporter.options.export_type
         self.output_path = os.path.normpath(batch_exporter.options.path)
         self.use_background_layers = self._str_to_bool(batch_exporter.options.use_background_layers)
         self.skip_hidden_layers = self._str_to_bool(batch_exporter.options.skip_hidden_layers)
         self.overwrite_files = self._str_to_bool(batch_exporter.options.overwrite_files)
+        self.export_plain_svg = self._str_to_bool(batch_exporter.options.export_plain_svg)
+        self.export_pdf_version = batch_exporter.options.export_pdf_version
 
-        self.naming_scheme = "simple"
+        # Export size page
+        self.export_area_type = batch_exporter.options.export_area_type
+        self.export_area_size = batch_exporter.options.export_area_size
+        self.export_res_type = batch_exporter.options.export_res_type
+        self.export_res_dpi = batch_exporter.options.export_res_dpi
+        self.export_res_width = batch_exporter.options.export_res_width
+        self.export_res_height = batch_exporter.options.export_res_height
+
+        # File naming page
+        self.naming_scheme = batch_exporter.options.naming_scheme
         self.use_number_prefix = batch_exporter.options.use_number_prefix
-        if batch_exporter.options.naming_scheme == '2':
-            self.naming_scheme = "advanced"
-            self.name_template = batch_exporter.options.name_template
+        self.name_template = batch_exporter.options.name_template
 
+        # Help page
         self.use_logging = self._str_to_bool(batch_exporter.options.use_logging)
         if self.use_logging:
             self.log_path = os.path.expanduser(batch_exporter.options.log_path)
@@ -37,51 +46,68 @@ class Options():
             else:
                 logging.basicConfig(filename=log_file_name, level=logging.DEBUG)
 
-    def _str_to_bool(self, str):
-        if str.lower() == 'true':
-            return True
-        return False
-
     def __str__(self):
-        print = "===> EXTENSION PARAMETERS\n"
+        print =  "===> EXTENSION PARAMETERS\n"
+        print += "\n======> Controls page\n"
         print += "Current file: {}\n".format(self.current_file)
         print += "Export type: {}\n".format(self.export_type)
         print += "Path: {}\n".format(self.output_path)
         print += "Use background layers: {}\n".format(self.use_background_layers)
         print += "Skip hidden layers: {}\n".format(self.skip_hidden_layers)
         print += "Overwrite files: {}\n".format(self.overwrite_files)
+        print += "Export plain SVG: {}\n".format(self.export_plain_svg)
+        print += "Export PDF version: {}\n".format(self.export_pdf_version)
+        print += "\n======> Export size page\n"
+        print += "Export area type: {}\n".format(self.export_area_type)
+        print += "Export area size: {}\n".format(self.export_area_size)
+        print += "Export res type: {}\n".format(self.export_res_type)
+        print += "Export res DPI: {}\n".format(self.export_res_dpi)
+        print += "Export res width: {}\n".format(self.export_res_width)
+        print += "Export res height: {}\n".format(self.export_res_height)
+        print += "\n======> File naming page\n"
         print += "Naming scheme: {}\n".format(self.naming_scheme)
-        if self.naming_scheme == 'simple':
-            print += "Add number as prefix: {}".format(self.use_number_prefix)
-        else:
-            print += "Name template: {}\n".format(self.name_template)
-
+        print += "Add number as prefix: {}\n".format(self.use_number_prefix)
+        print += "Name template: {}\n".format(self.name_template)
+        print += "\n======> Help page\n"
         print += "Use logging: {}\n".format(self.use_logging)
         print += "Overwrite log: {}\n".format(self.overwrite_log)
-        if self.use_logging:
-            print += "Log path: {}\n".format(self.log_path)
-
+        print += "Log path: {}\n".format(self.log_path)
+        print += "---------------------------------------\n"
         return print
+
+    def _str_to_bool(self, str):
+        if str.lower() == 'true':
+            return True
+        return False
 
 class BatchExporter(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
         inkex.Effect.__init__(self)
-        # Export parameters
-        self.arg_parser.add_argument("--export-type", action="store", type=str, dest="export_type", default="1", help="")
-        self.arg_parser.add_argument("--path", action="store", type=str, dest="path", default="", help="export path")
 
-        # Other
+        # Controls page
+        self.arg_parser.add_argument("--export-type", action="store", type=str, dest="export_type", default="svg", help="")
+        self.arg_parser.add_argument("--path", action="store", type=str, dest="path", default="", help="export path")
         self.arg_parser.add_argument("--use-background-layers", action="store", type=str, dest="use_background_layers", default=False, help="")
         self.arg_parser.add_argument("--skip-hidden-layers", action="store", type=str, dest="skip_hidden_layers", default=False, help="")
         self.arg_parser.add_argument("--overwrite-files", action="store", type=str, dest="overwrite_files", default=False, help="")
+        self.arg_parser.add_argument("--export-plain-svg", action="store", type=str, dest="export_plain_svg", default=False, help="")
+        self.arg_parser.add_argument("--export-pdf-version", action="store", type=str, dest="export_pdf_version", default="1.4", help="")
 
-        # Naming parameters
-        self.arg_parser.add_argument("--naming-scheme", action="store", type=str, dest="naming_scheme", default="1", help="")
+        # Export size page
+        self.arg_parser.add_argument("--export-area-type", action="store", type=str, dest="export_area_type", default="page", help="")
+        self.arg_parser.add_argument("--export-area-size", action="store", type=str, dest="export_area_size", default="0:0:100:100", help="")
+        self.arg_parser.add_argument("--export-res-type", action="store", type=str, dest="export_res_type", default="default", help="")
+        self.arg_parser.add_argument("--export-res-dpi", action="store", type=int, dest="export_res_dpi", default="96", help="")
+        self.arg_parser.add_argument("--export-res-width", action="store", type=int, dest="export_res_width", default="100", help="")
+        self.arg_parser.add_argument("--export-res-height", action="store", type=int, dest="export_res_height", default="100", help="")
+
+        # File naming page
+        self.arg_parser.add_argument("--naming-scheme", action="store", type=str, dest="naming_scheme", default="simple", help="")
         self.arg_parser.add_argument("--use-number-prefix", action="store", type=str, dest="use_number_prefix", default=False, help="")
         self.arg_parser.add_argument("--name-template", action="store", type=str, dest="name_template", default="[LAYER_NAME]", help="")
 
-        # Log
+        # Help page
         self.arg_parser.add_argument("--use-logging", action="store", type=str, dest="use_logging", default=False, help="")
         self.arg_parser.add_argument("--overwrite-log", action="store", type=str, dest="overwrite_log", default=False, help="")
         self.arg_parser.add_argument("--log-path", action="store", type=str, dest="log_path", default="", help="")
@@ -96,6 +122,9 @@ class BatchExporter(inkex.Effect):
         # Check user options
         options = Options(self)
         logging.debug(options)
+
+        # Build the partial inkscape export command
+        command = self.build_partial_command(options)
 
         # Get the layers from the current file
         layers = self.get_layers(options.current_file, options.skip_hidden_layers, options.use_background_layers)
@@ -128,36 +157,73 @@ class BatchExporter(inkex.Effect):
                 continue
 
             # Create a new file in which we delete unwanted layers to keep the exported file size to a minimum
-            logging.debug("  Preparing layer [{}, {}]".format(layer_id, layer_label))
+            logging.debug("  Preparing layer [{}]".format(layer_label))
             temporary_file_path = self.manage_layers("", show_layer_ids)
 
-            logging.debug("  Exporting [{}, {}] as {}\n".format(layer_id, layer_label, file_name))
-            if options.export_type == 'svg':
-                self.exportToSVG(temporary_file_path, destination_path)
-            else:
-                self.exportToPNG(temporary_file_path, destination_path)
+            # Export to file
+            logging.debug("  Exporting [{}] as {}".format(layer_label, file_name))
+            self.export_to_file(command.copy(), temporary_file_path, destination_path)
 
             # Clean up - delete the temporary file we have created
             os.remove(temporary_file_path)
 
             counter += 1
 
-    def get_simple_name(self, use_number_prefix, counter, layer_label):
-        if use_number_prefix:
-            return "{}_{}".format(counter, layer_label)
+    def get_layers(self, file, skip_hidden_layers, use_background_layers):
+        svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
+        layers = []
 
-        return layer_label
+        for layer in svg_layers:
+            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
+            if label_attrib_name not in layer.attrib:
+                continue
 
-    def get_advanced_name(self, template_name, counter, layer_label):
-        file_name = template_name
-        file_name = file_name.replace('[LAYER_NAME]', layer_label)
-        file_name = file_name.replace("[NUM]", str(counter))
-        file_name = file_name.replace("[NUM-1]", str(counter).zfill(1))
-        file_name = file_name.replace("[NUM-2]", str(counter).zfill(2))
-        file_name = file_name.replace("[NUM-3]", str(counter).zfill(3))
-        file_name = file_name.replace("[NUM-4]", str(counter).zfill(4))
-        file_name = file_name.replace("[NUM-5]", str(counter).zfill(5))
-        return file_name
+            # Skipping hidden layers
+            if skip_hidden_layers and 'style' in layer.attrib:
+                if 'display:none' in layer.attrib['style']:
+                    logging.debug("  Skip: [{}]".format(layer.attrib[label_attrib_name]))
+                    continue
+
+            layer_id = layer.attrib["id"]
+            layer_label = layer.attrib[label_attrib_name]
+
+            # Checking for background (fixed) layers
+            if use_background_layers and layer_label.lower().startswith("[fixed] "):
+                layer_type = "fixed"
+                layer_label = layer_label[8:]
+            else:
+                layer_type = "export"
+
+            logging.debug("  Use : [{}, {}]".format(layer_label, layer_type))
+            layers.append([layer_id, layer_label, layer_type])
+
+        logging.debug("  TOTAL NUMBER OF LAYERS: {}\n".format(len(layers)))
+        return layers
+
+    def build_partial_command(self, options):
+        command = ['inkscape', '--vacuum-defs']
+
+        if options.export_type == 'svg' and options.export_plain_svg == True:
+            command.append('--export-plain-svg')
+        if options.export_type == 'pdf':
+            command.append('--export-pdf-version={}'.format(options.export_pdf_version))
+
+        # Export area - default: export area page
+        if options.export_area_type == 'drawing':
+            command.append('--export-area-drawing')
+        elif options.export_area_type == 'custom':
+            command.append('--export-area={}'.format(options.export_area_size))
+        else:
+            command.append('--export-area-page')
+
+        # Export res - default: no arguments
+        if options.export_res_type == 'dpi':
+            command.append('--export-dpi={}'.format(options.export_res_dpi))
+        elif options.export_res_type == 'size':
+            command.append('--export-width={}'.format(options.export_res_width))
+            command.append('--export-height={}'.format(options.export_res_height))
+
+        return command
 
     def manage_layers(self, temporary_file_path, show_layer_ids):
         # Create a copy of the current document
@@ -177,72 +243,36 @@ class BatchExporter(inkex.Effect):
             doc.write(temporary_file.name)
             return temporary_file.name
 
-    def get_layers(self, file, skip_hidden_layers, use_background_layers):
-        svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
-        layers = []
+    def get_simple_name(self, use_number_prefix, counter, layer_label):
+        if use_number_prefix:
+            return "{}_{}".format(counter, layer_label)
 
-        for layer in svg_layers:
-            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
-            if label_attrib_name not in layer.attrib:
-                continue
+        return layer_label
 
-            # Skipping hidden layers
-            if skip_hidden_layers and 'style' in layer.attrib:
-                if 'display:none' in layer.attrib['style']:
-                    logging.debug("  Skip: [{}, {}]".format(layer.attrib["id"], layer.attrib[label_attrib_name]))
-                    continue
+    def get_advanced_name(self, template_name, counter, layer_label):
+        file_name = template_name
+        file_name = file_name.replace('[LAYER_NAME]', layer_label)
+        file_name = file_name.replace("[NUM]", str(counter))
+        file_name = file_name.replace("[NUM-1]", str(counter).zfill(1))
+        file_name = file_name.replace("[NUM-2]", str(counter).zfill(2))
+        file_name = file_name.replace("[NUM-3]", str(counter).zfill(3))
+        file_name = file_name.replace("[NUM-4]", str(counter).zfill(4))
+        file_name = file_name.replace("[NUM-5]", str(counter).zfill(5))
+        return file_name
 
-            layer_id = layer.attrib["id"]
-            layer_label = layer.attrib[label_attrib_name]
-
-            # Checking for background (fixed) layers
-            if use_background_layers and layer_label.lower().startswith("[fixed] "):
-                layer_type = "fixed"
-                layer_label = layer_label[8:]
-            else:
-                layer_type = "export"
-
-            logging.debug("  Use : [{}, {}, {}]".format(layer_id, layer_label, layer_type))
-            layers.append([layer_id, layer_label, layer_type])
-
-        logging.debug("  TOTAL NUMBER OF LAYERS: {}\n".format(len(layers)))
-        return layers
-
-    def exportToSVG(self, svg_path, output_path):
-        args = [
-            'inkscape',
-            '--vacuum-defs',
-            '--export-area-page',
-            '--export-plain-svg',
-            '--export-filename=%s' % output_path,
-            svg_path
-        ]
+    def export_to_file(self, command, svg_path, output_path):
+        command.append('--export-filename=%s' % output_path)
+        command.append(svg_path)
+        logging.debug("{}\n".format(command))
 
         try:
-            with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+            with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
                 proc.wait(timeout=300)
         except OSError:
-            logging.debug('Error while exporting file {}.'.format(output_path))
-            inkex.errormsg('Error while exporting file {}.'.format(output_path))
+            logging.debug('Error while exporting file {}.'.format(command))
+            inkex.errormsg('Error while exporting file {}.'.format(command))
             exit()
 
-    def exportToPNG(self, svg_path, output_path):
-        # TODO: PNG export DPI
-        args = [
-            'inkscape',
-            '--vacuum-defs',
-            '--export-area-page',
-            '--export-filename=%s' % output_path,
-            svg_path
-        ]
-
-        try:
-            with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
-                proc.wait(timeout=300)
-        except OSError:
-            logging.debug('Error while exporting file {}.'.format(output_path))
-            inkex.errormsg('Error while exporting file {}.'.format(output_path))
-            exit()
 
 def _main():
     exporter = BatchExporter()

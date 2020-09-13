@@ -10,8 +10,14 @@
 
       <label appearance="header">Export parameters</label>
       <param name="export-type" type="enum" gui-text="Export layers as:" indent="1">
-        <item value="1">SVG</item>
-        <item value="2">PNG</item>
+        <item value="svg">SVG</item>
+        <item value="png">PNG</item>
+        <item value="pdf">PDF</item>
+        <item value="ps">PS</item>
+        <item value="eps">EPS</item>
+        <item value="emf">EMF</item>
+        <item value="wmf">WMF</item>
+        <item value="xaml">XAML</item>
       </param>
 
       <label indent="1">Export path:</label>
@@ -19,16 +25,47 @@
       <separator/>
       <spacer/>
 
-      <label appearance="header">Other options:</label>
+      <label appearance="header">Other options</label>
       <param name="use-background-layers" type="bool" gui-text="Use background layers" indent="1">false</param>
       <param name="skip-hidden-layers" type="bool" gui-text="Skip hidden layers" indent="1">false</param>
       <param name="overwrite-files" type="bool" gui-text="Overwrite existing files" indent="1">false</param>
+      <param name="export-plain-svg" type="bool" gui-text="Export plain SVG" indent="1">true</param>
+      <param name="export-pdf-version" type="enum" gui-text="Choose PDF version:" indent="1">
+        <item value="1.4">1.4</item>
+        <item value="1.5">1.5</item>
+      </param>
     </page>
+
+    <page name="export-size" gui-text="Export size">
+      <label appearance="header">Export area</label>
+      <param name="export-area-type" type="enum" gui-text="Choose export area type:" indent="1">
+        <item value="page">Page</item>
+        <item value="drawing">Drawing</item>
+        <item value="custom">Custom</item>
+      </param>
+      <label indent="1">For custom export area define the area limits: x0:y0:x1:y1</label>
+      <param name="export-area-size" type="string" gui-text="" indent="1">0:0:100:100</param>
+      <separator/>
+      <spacer/>
+
+      <label appearance="header">Export resolution</label>
+      <param name="export-res-type" type="enum" gui-text="Choose resolution type:" indent="1">
+        <item value="default">Default</item>
+        <item value="dpi">Custom DPI</item>
+        <item value="size">Custom size</item>
+      </param>
+
+      <param name="export-res-dpi" type="int" min="1" max="9999" gui-text="Custom DPI:" indent="1">96</param>
+      <label indent="1">Custom size:</label>
+      <param name="export-res-width" type="int" min="1" max="9999" gui-text="Width" indent="2">100</param>
+      <param name="export-res-height" type="int" min="1" max="9999" gui-text="Height" indent="2">100</param>
+    </page>
+
 
     <page name="naming" gui-text="File naming">
       <param name="naming-scheme" type="enum" gui-text="Use naming scheme:">
-        <item value="1">Simple</item>
-        <item value="2">Advanced</item>
+        <item value="simple">Simple</item>
+        <item value="advanced">Advanced</item>
       </param>
       <separator/>
       <spacer/>
@@ -52,7 +89,7 @@
     </page>
 
     <page name="help" gui-text="Help">
-      <label appearance="header">Logging:</label>
+      <label appearance="header">Logging</label>
       <param name="use-logging" type="bool" gui-text="Use logging" indent="1">false</param>
       <param name="overwrite-log" type="bool" gui-text="Overwrite existing log file" indent="1">false</param>
       <label indent="1">Log file path:</label>
