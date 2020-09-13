@@ -3,21 +3,21 @@
 </p>
 
 This extension will help you export your work easier:
-- Export each layer as a separate file
-- Choose which layers to export
-- Automated file naming
-- Supports multiple export file formats
-- Configure background layers
+- Supports multiple export file formats (SVG, PNG, PS, EPS, PDF, EMF, WMF, XAML).
+- Export each layer as a separate file.
+- Choose which layers to export.
+- Automated file naming.
+- Configure background layers.
 
 ![Inkscape view](images/inkscape_main_view.png)
 
 # Install
 Download this project and copy the extension files (`batch_export.inx` and `batch_export.py`) to the config path of your Inkscape installation.
 
-One simple way of finding the config path is to open Inkscape and go to Edit > Preferences > System. The path will be listed in the User extensions field. Make sure you restart Inkscape after you copied the extension files at the desired location and the extension will be available in the extensions menu.
+One simple way of finding the config path is to open Inkscape and go to **Edit > Preferences > System**. The path will be listed in the **User extensions** field. Make sure you restart Inkscape after you copied the extension files at the desired location and the extension will be available in the extensions menu.
 
 ### Linux
-On Linux, the path may be:
+The default path on Linux is:
 ```
 ~/.config/inkscape/extensions
 ```
@@ -37,14 +37,14 @@ If you don't see the AppData folder, you need to set the windows explorer to sho
 # Usage
 After the extension is installed, it can be found in the **Extensions** menu, **Export** submenu.
 
-<img src="images/extension_controls.png" width="33%"></img>
-<img src="images/extension_naming.png" width="33%"></img>
-<img src="images/extension_help.png" width="33%"></img>
+<img src="images/extension_controls.png" width="48%"></img>
+<img src="images/extension_export.png" width="48%"></img>
 
 ### Controls
 
 * Export parameters
-    * In this section, you can choose to export the layers as SVG or as PNG files at your desired location.
+    * In this section, you can choose to export the layers at your desired location.
+    * The output files can be exported in one of the following formats: SVG, PNG, PS, EPS, PDF, EMF, WMF, XAML.
 
 * Other options
     * Check the **Use background layers** options if you want to have one or more layers that will appear in all exports. You also need to name these layers with a fixed tag at the beginning.
@@ -53,6 +53,24 @@ After the extension is installed, it can be found in the **Extensions** menu, **
     ```
     * If you have any layers that you don't want to be exported, just hide them in the layer panel of Inkscape and then turn on the **Skip hidden layers** option. This way you can have other testing or mockup layers in your file and still be able to export all the others.
     * If in the export path there are any other files with the same name as one of the exported files, the extension will not overwrite that file, therefore not exporting that particular layer(s). If you don't want this behaviour you can turn on the **Overwrite existing files** option. This option is turned off by default to make sure you don't lose any files by mistake.
+    * Choose the **export plain SVG** option to remove any Inkscape-specific SVG attributes/properties.
+    * If you want to export the files in PDF format you can choose the PDF version to be used(1.4 or 1.5).
+
+### Export size
+
+On the second page you can configure both the area that is exported and the size and resolution of the output file(if it supports it).
+* **Export area**
+    * Page - Area to export is page.
+    * Drawing - Area to export is whole drawing (ignoring page size).
+    * Custom - Define a custom area to export in SVG user units.
+* **Export resolution**
+    * Default - no custom options.
+    * Custom DPI - Resolution for bitmaps and rasterized filters.
+    * Custom size - Set width and height of the output file.
+
+
+<img src="images/extension_naming.png" width="48%"></img>
+<img src="images/extension_help.png" width="48%"></img>
 
 ### File naming
 
