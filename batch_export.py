@@ -260,7 +260,7 @@ class BatchExporter(inkex.Effect):
             if layer_id not in show_layer_ids:
                 # layer.getparent().remove(layer)
                 layer.attrib['style'] = 'display:none'
-                logging.debug("    Deleting: [{}, {}]".format(layer_id, layer_label))
+                logging.debug("    Hiding: [{}, {}]".format(layer_id, layer_label))
 
         # Save the data in a temporary file
         with tempfile.NamedTemporaryFile(delete=False) as temporary_file:
