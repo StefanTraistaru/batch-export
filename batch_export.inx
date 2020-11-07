@@ -30,6 +30,8 @@
       <param name="skip-hidden-layers" type="bool" gui-text="Skip hidden layers" indent="1">false</param>
       <param name="overwrite-files" type="bool" gui-text="Overwrite existing files" indent="1">false</param>
       <param name="export-plain-svg" type="bool" gui-text="Export plain SVG" indent="1">true</param>
+      <param name="using-clones" type="bool" gui-text="Using clones" gui-description="It is recommended to unlink clones recursively(this will break clones) and leave this option unticked." indent="1">false</param>
+
       <param name="export-pdf-version" type="enum" gui-text="Choose PDF version:" indent="1">
         <item value="1.4">1.4</item>
         <item value="1.5">1.5</item>

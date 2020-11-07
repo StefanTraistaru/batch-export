@@ -54,6 +54,11 @@ After the extension is installed, it can be found in the **Extensions** menu, **
     * If you have any layers that you don't want to be exported, just hide them in the layer panel of Inkscape and then turn on the **Skip hidden layers** option. This way you can have other testing or mockup layers in your file and still be able to export all the others.
     * If in the export path there are any other files with the same name as one of the exported files, the extension will not overwrite that file, therefore not exporting that particular layer(s). If you don't want this behaviour you can turn on the **Overwrite existing files** option. This option is turned off by default to make sure you don't lose any files by mistake.
     * Choose the **export plain SVG** option to remove any Inkscape-specific SVG attributes/properties.
+    * **Using clones** - select this option if you are using clones in your document, otherwise only the original object will appear in the exported files.
+        > Selecting this option will result in larger file sizes, so **_I recommend using the following method instead_** if you can:
+        > 1. Create a copy of your Inkscape file so that you don't mess with your current file. (Or simply create a backup as this will break your clones)
+        > 2. Select all objects (Ctrl+Alt+A or Edit->Select All in All Layers should work if there are no locked layers) and use the option Edit->Clone->Unlink Clones recursively.
+        > 3. Use the extension as previously intended, without selecting the "using clones" option.
     * If you want to export the files in PDF format you can choose the PDF version to be used(1.4 or 1.5).
 
 ### Export size

@@ -20,6 +20,7 @@ class Options():
         self.skip_hidden_layers = self._str_to_bool(batch_exporter.options.skip_hidden_layers)
         self.overwrite_files = self._str_to_bool(batch_exporter.options.overwrite_files)
         self.export_plain_svg = self._str_to_bool(batch_exporter.options.export_plain_svg)
+        self.using_clones = self._str_to_bool(batch_exporter.options.using_clones)
         self.export_pdf_version = batch_exporter.options.export_pdf_version
 
         # Export size page
@@ -56,6 +57,7 @@ class Options():
         print += "Skip hidden layers: {}\n".format(self.skip_hidden_layers)
         print += "Overwrite files: {}\n".format(self.overwrite_files)
         print += "Export plain SVG: {}\n".format(self.export_plain_svg)
+        print += "Using clones: {}\n".format(self.using_clones)
         print += "Export PDF version: {}\n".format(self.export_pdf_version)
         print += "\n======> Export size page\n"
         print += "Export area type: {}\n".format(self.export_area_type)
@@ -92,6 +94,7 @@ class BatchExporter(inkex.Effect):
         self.arg_parser.add_argument("--skip-hidden-layers", action="store", type=str, dest="skip_hidden_layers", default=False, help="")
         self.arg_parser.add_argument("--overwrite-files", action="store", type=str, dest="overwrite_files", default=False, help="")
         self.arg_parser.add_argument("--export-plain-svg", action="store", type=str, dest="export_plain_svg", default=False, help="")
+        self.arg_parser.add_argument("--using-clones", action="store", type=str, dest="using_clones", default=False, help="")
         self.arg_parser.add_argument("--export-pdf-version", action="store", type=str, dest="export_pdf_version", default="1.4", help="")
 
         # Export size page
@@ -158,7 +161,10 @@ class BatchExporter(inkex.Effect):
 
             # Create a new file in which we delete unwanted layers to keep the exported file size to a minimum
             logging.debug("  Preparing layer [{}]".format(layer_label))
-            temporary_file_path = self.manage_layers("", show_layer_ids)
+            if options.using_clones:
+                temporary_file_path = self.manage_layers_with_clones("", show_layer_ids)
+            else:
+                temporary_file_path = self.manage_layers("", show_layer_ids)
 
             # Export to file
             logging.debug("  Exporting [{}] as {}".format(layer_label, file_name))
@@ -236,6 +242,25 @@ class BatchExporter(inkex.Effect):
             if layer_id not in show_layer_ids:
                 layer.getparent().remove(layer)
                 logging.debug("    Deleting: [{}, {}]".format(layer_id, layer_label))
+
+        # Save the data in a temporary file
+        with tempfile.NamedTemporaryFile(delete=False) as temporary_file:
+            logging.debug("    Creating temp file {}".format(temporary_file.name))
+            doc.write(temporary_file.name)
+            return temporary_file.name
+
+    def manage_layers_with_clones(self, temporary_file_path, show_layer_ids):
+        # Create a copy of the current document
+        doc = copy.deepcopy(self.document)
+        for layer in doc.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS):
+            layer_id = layer.attrib["id"]
+            layer_label = layer.attrib["{%s}label" % layer.nsmap['inkscape']]
+
+            # Display/Delete layers
+            if layer_id not in show_layer_ids:
+                # layer.getparent().remove(layer)
+                layer.attrib['style'] = 'display:none'
+                logging.debug("    Hiding: [{}, {}]".format(layer_id, layer_label))
 
         # Save the data in a temporary file
         with tempfile.NamedTemporaryFile(delete=False) as temporary_file:
