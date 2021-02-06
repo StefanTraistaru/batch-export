@@ -33,7 +33,7 @@ class Options():
 
         # File naming page
         self.naming_scheme = batch_exporter.options.naming_scheme
-        self.use_number_prefix = batch_exporter.options.use_number_prefix
+        self.use_number_prefix = self._str_to_bool(batch_exporter.options.use_number_prefix)
         self.name_template = batch_exporter.options.name_template
 
         # Help page
