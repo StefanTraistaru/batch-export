@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="210mm"
    height="297mm"
    viewBox="0 0 210 297"
    version="1.1"
    id="svg8"
-   inkscape:version="1.0.1 (1.0.1+r73)"
-   sodipodi:docname="batch-export-test.svg">
+   inkscape:version="1.1 (1:1.1+202105261517+ce6663b3b7)"
+   sodipodi:docname="batch-export-test.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -24,8 +25,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.64"
-     inkscape:cx="337.26515"
-     inkscape:cy="553.25468"
+     inkscape:cx="237.5"
+     inkscape:cy="553.90625"
      inkscape:document-units="mm"
      inkscape:current-layer="layer5"
      inkscape:document-rotation="0"
@@ -34,10 +35,10 @@
      borderlayer="true"
      inkscape:showpageshadow="false"
      inkscape:snap-page="true"
-     inkscape:window-width="1860"
-     inkscape:window-height="1028"
-     inkscape:window-x="1980"
-     inkscape:window-y="22"
+     inkscape:window-width="1892"
+     inkscape:window-height="977"
+     inkscape:window-x="14"
+     inkscape:window-y="14"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
@@ -54,7 +55,7 @@
   <g
      style="display:inline"
      inkscape:groupmode="layer"
-     id="layer6"
+     id="background"
      inkscape:label="[fixed] Background"
      sodipodi:insensitive="true">
     <rect
@@ -68,7 +69,7 @@
   <g
      style="display:none"
      inkscape:groupmode="layer"
-     id="layer7"
+     id="testing"
      inkscape:label="Testing"
      sodipodi:insensitive="true">
     <path
@@ -128,9 +129,25 @@
   </g>
   <g
      inkscape:groupmode="layer"
-     id="layer2"
+     id="layer1"
      inkscape:label="Layer 1"
      sodipodi:insensitive="true">
+    <g
+       inkscape:groupmode="layer"
+       id="layer2"
+       inkscape:label="Layer 2">
+      <text
+         id="text835-3"
+         y="102.16436"
+         x="-6.7733278"
+         style="font-style:normal;font-weight:normal;font-size:141.111px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         xml:space="preserve"><tspan
+           style="font-size:141.111px;stroke-width:0.264583"
+           y="102.16436"
+           x="-6.7733278"
+           id="tspan833-6"
+           sodipodi:role="line">2</tspan></text>
+    </g>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:141.111px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -145,27 +162,46 @@
   </g>
   <g
      inkscape:groupmode="layer"
-     id="layer1"
-     inkscape:label="Layer 2"
-     sodipodi:insensitive="true">
-    <text
-       id="text835-3"
-       y="102.16436"
-       x="-6.7733278"
-       style="font-style:normal;font-weight:normal;font-size:141.111px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       xml:space="preserve"><tspan
-         style="font-size:141.111px;stroke-width:0.264583"
-         y="102.16436"
-         x="-6.7733278"
-         id="tspan833-6"
-         sodipodi:role="line">2</tspan></text>
-  </g>
-  <g
-     inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="Layer 3"
      style="display:inline"
      sodipodi:insensitive="true">
+    <g
+       inkscape:groupmode="layer"
+       id="layer4"
+       inkscape:label="Layer 4"
+       style="display:inline"
+       sodipodi:insensitive="true">
+      <g
+         inkscape:groupmode="layer"
+         id="layer5"
+         inkscape:label="Layer 5"
+         style="display:inline"
+         sodipodi:insensitive="true">
+        <text
+           id="text835-9"
+           y="295.5889"
+           x="137.32784"
+           style="font-style:normal;font-weight:normal;font-size:141.111px;line-height:1.25;font-family:sans-serif;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+           xml:space="preserve"><tspan
+             style="font-size:141.111px;stroke-width:0.264583"
+             y="295.5889"
+             x="137.32784"
+             id="tspan833-1"
+             sodipodi:role="line">5</tspan></text>
+      </g>
+      <text
+         id="text835-35"
+         y="297"
+         x="-2.9633307"
+         style="font-style:normal;font-weight:normal;font-size:141.111px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         xml:space="preserve"><tspan
+           style="font-size:141.111px;stroke-width:0.264583"
+           y="297"
+           x="-2.9633307"
+           id="tspan833-62"
+           sodipodi:role="line">4</tspan></text>
+    </g>
     <text
        id="text835-7"
        y="102.16436"
@@ -180,38 +216,18 @@
   </g>
   <g
      inkscape:groupmode="layer"
-     id="layer4"
-     inkscape:label="Layer 4"
+     id="layer6"
+     inkscape:label="Layer 6 - contains clone from layer 2"
      style="display:inline"
      sodipodi:insensitive="true">
-    <text
-       id="text835-35"
-       y="297"
-       x="-2.9633307"
-       style="font-style:normal;font-weight:normal;font-size:141.111px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       xml:space="preserve"><tspan
-         style="font-size:141.111px;stroke-width:0.264583"
-         y="297"
-         x="-2.9633307"
-         id="tspan833-62"
-         sodipodi:role="line">4</tspan></text>
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer5"
-     inkscape:label="Layer 5"
-     style="display:inline"
-     sodipodi:insensitive="true">
-    <text
-       id="text835-9"
-       y="295.5889"
-       x="137.32784"
-       style="font-style:normal;font-weight:normal;font-size:141.111px;line-height:1.25;font-family:sans-serif;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       xml:space="preserve"><tspan
-         style="font-size:141.111px;stroke-width:0.264583"
-         y="295.5889"
-         x="137.32784"
-         id="tspan833-1"
-         sodipodi:role="line">5</tspan></text>
+    <use
+       x="0"
+       y="0"
+       xlink:href="#text835-3"
+       id="use41"
+       transform="translate(32.29276,-0.58711483)"
+       width="100%"
+       height="100%"
+       style="fill:#000000;stroke:#00ff00" />
   </g>
 </svg>
