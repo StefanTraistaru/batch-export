@@ -137,7 +137,7 @@ class BatchExporter(inkex.Effect):
         command = self.build_partial_command(options)
 
         # Get the layers from the current file
-        layers = self.get_layers(options.current_file, options.skip_hidden_layers, options.use_background_layers)
+        layers = self.get_layers(options.skip_hidden_layers, options.use_background_layers)
 
         # For each layer export a file
         for (layer_id, layer_label, layer_type, parents) in layers:
@@ -146,8 +146,9 @@ class BatchExporter(inkex.Effect):
 
             show_layer_ids = [layer[0] for layer in layers if layer[2] == "fixed" or layer[0] == layer_id]
             # Append parent layers
-            show_layer_ids.extend(parents)
-            logging.debug(show_layer_ids)
+            if options.hierarchical_layers:
+                show_layer_ids.extend(parents)
+                logging.debug(show_layer_ids)
 
             # Create the output folder if it doesn't exist
             if not os.path.exists(os.path.join(options.output_path)):
@@ -171,7 +172,7 @@ class BatchExporter(inkex.Effect):
 
             # Create a new file in which we delete unwanted layers to keep the exported file size to a minimum
             logging.debug("  Preparing layer [{}]".format(layer_label))
-            temporary_file_path = self.manage_layers("", show_layer_ids, options.hierarchical_layers, options.using_clones)
+            temporary_file_path = self.manage_layers("", layer_id, show_layer_ids, options.hierarchical_layers, options.using_clones)
 
             # Export to file
             logging.debug("  Exporting [{}] as {}".format(layer_label, file_name))
@@ -182,7 +183,7 @@ class BatchExporter(inkex.Effect):
 
             counter += 1
 
-    def get_layers(self, file, skip_hidden_layers, use_background_layers):
+    def get_layers(self, skip_hidden_layers, use_background_layers):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
         layers = []
 
@@ -251,17 +252,11 @@ class BatchExporter(inkex.Effect):
         return command
 
     # Delete/Hide unwanted layers to create a clean svg file that will be exported
-    def manage_layers(self, temporary_file_path, show_layer_ids, hierarchical_layers, hide_layers):
+    def manage_layers(self, target_layer_id, show_layer_ids, hierarchical_layers, hide_layers):
         # Create a copy of the current document
         doc = copy.deepcopy(self.document)
         target_layer_found = False
         target_layer = None
-        target_layer_id = show_layer_ids[0]
-
-        # For solo_layer option, all the layers are deleted/hidden to clean the document
-        # The target layer will be added as the only layer in the document
-        if not hierarchical_layers:
-            show_layer_ids = []
 
         # Iterate through all layers in the document
         for layer in doc.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS):
