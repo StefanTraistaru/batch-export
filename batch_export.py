@@ -172,7 +172,7 @@ class BatchExporter(inkex.Effect):
 
             # Create a new file in which we delete unwanted layers to keep the exported file size to a minimum
             logging.debug("  Preparing layer [{}]".format(layer_label))
-            temporary_file_path = self.manage_layers("", layer_id, show_layer_ids, options.hierarchical_layers, options.using_clones)
+            temporary_file_path = self.manage_layers(layer_id, show_layer_ids, options.hierarchical_layers, options.using_clones)
 
             # Export to file
             logging.debug("  Exporting [{}] as {}".format(layer_label, file_name))
