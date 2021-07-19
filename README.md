@@ -45,6 +45,10 @@ After the extension is installed, it can be found in the **Extensions** menu, **
 * Export parameters
     * In this section, you can choose to export the layers at your desired location.
     * The output files can be exported in one of the following formats: SVG, PNG, PS, EPS, PDF, EMF, WMF, XAML.
+    * If you want to export the files in PDF format you can choose the PDF version to be used(1.4 or 1.5).
+    * Choose a layer export mode (this feature is independent from the **Use background layers**):
+        * Export each layer as a single layer - the export file will contain only the objects from this layer
+        * Use parent layers as background layers - the export file will contain the objects from the parent layers as well
 
 * Other options
     * Check the **Use background layers** options if you want to have one or more layers that will appear in all exports. You also need to name these layers with a fixed tag at the beginning.
@@ -59,7 +63,6 @@ After the extension is installed, it can be found in the **Extensions** menu, **
         > 1. Create a copy of your Inkscape file so that you don't mess with your current file. (Or simply create a backup as this will break your clones)
         > 2. Select all objects (Ctrl+Alt+A or Edit->Select All in All Layers should work if there are no locked layers) and use the option Edit->Clone->Unlink Clones recursively.
         > 3. Use the extension as previously intended, without selecting the "using clones" option.
-    * If you want to export the files in PDF format you can choose the PDF version to be used(1.4 or 1.5).
 
 ### Export size
 

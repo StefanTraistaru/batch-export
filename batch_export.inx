@@ -20,6 +20,15 @@
         <item value="xaml">XAML</item>
       </param>
 
+      <param name="export-pdf-version" type="enum" gui-text="PDF version:" indent="1">
+        <item value="1.4">1.4</item>
+        <item value="1.5">1.5</item>
+      </param>
+      <param name="hierarchical-layers" type="enum" gui-text="Layer export mode:" indent="1">
+        <item value="solo">Export each layer as a single layer</item>
+        <item value="hierarchical">Use parent layers as background layers</item>
+      </param>
+
       <label indent="1">Export path:</label>
       <param name="path" type="path" mode="folder" gui-text="" indent="1"/>
       <separator/>
@@ -32,10 +41,7 @@
       <param name="export-plain-svg" type="bool" gui-text="Export plain SVG" indent="1">true</param>
       <param name="using-clones" type="bool" gui-text="Using clones" gui-description="It is recommended to unlink clones recursively(this will break clones) and leave this option unticked." indent="1">false</param>
 
-      <param name="export-pdf-version" type="enum" gui-text="Choose PDF version:" indent="1">
-        <item value="1.4">1.4</item>
-        <item value="1.5">1.5</item>
-      </param>
+
     </page>
 
     <page name="export-size" gui-text="Export size">
