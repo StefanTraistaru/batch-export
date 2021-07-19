@@ -21,6 +21,11 @@ class Options():
         self.overwrite_files = self._str_to_bool(batch_exporter.options.overwrite_files)
         self.export_plain_svg = self._str_to_bool(batch_exporter.options.export_plain_svg)
         self.using_clones = self._str_to_bool(batch_exporter.options.using_clones)
+        hierarchical_layers = batch_exporter.options.hierarchical_layers
+        self.hierarchical_layers = False
+        if hierarchical_layers == "hierarchical":
+            self.hierarchical_layers = True
+
         self.export_pdf_version = batch_exporter.options.export_pdf_version
 
         # Export size page
@@ -58,6 +63,7 @@ class Options():
         print += "Overwrite files: {}\n".format(self.overwrite_files)
         print += "Export plain SVG: {}\n".format(self.export_plain_svg)
         print += "Using clones: {}\n".format(self.using_clones)
+        print += "Hierarchical layers: {}\n".format(self.hierarchical_layers)
         print += "Export PDF version: {}\n".format(self.export_pdf_version)
         print += "\n======> Export size page\n"
         print += "Export area type: {}\n".format(self.export_area_type)
@@ -95,7 +101,8 @@ class BatchExporter(inkex.Effect):
         self.arg_parser.add_argument("--overwrite-files", action="store", type=str, dest="overwrite_files", default=False, help="")
         self.arg_parser.add_argument("--export-plain-svg", action="store", type=str, dest="export_plain_svg", default=False, help="")
         self.arg_parser.add_argument("--using-clones", action="store", type=str, dest="using_clones", default=False, help="")
-        self.arg_parser.add_argument("--export-pdf-version", action="store", type=str, dest="export_pdf_version", default="1.4", help="")
+        self.arg_parser.add_argument("--hierarchical-layers", action="store", type=str, dest="hierarchical_layers", default="solo", help="Is this working?")
+        self.arg_parser.add_argument("--export-pdf-version", action="store", type=str, dest="export_pdf_version", default="1.5", help="")
 
         # Export size page
         self.arg_parser.add_argument("--export-area-type", action="store", type=str, dest="export_area_type", default="page", help="")
@@ -133,11 +140,14 @@ class BatchExporter(inkex.Effect):
         layers = self.get_layers(options.current_file, options.skip_hidden_layers, options.use_background_layers)
 
         # For each layer export a file
-        for (layer_id, layer_label, layer_type) in layers:
+        for (layer_id, layer_label, layer_type, parents) in layers:
             if layer_type == "fixed":
                 continue
 
             show_layer_ids = [layer[0] for layer in layers if layer[2] == "fixed" or layer[0] == layer_id]
+            # Append parent layers
+            show_layer_ids.extend(parents)
+            logging.debug(show_layer_ids)
 
             # Create the output folder if it doesn't exist
             if not os.path.exists(os.path.join(options.output_path)):
@@ -161,10 +171,7 @@ class BatchExporter(inkex.Effect):
 
             # Create a new file in which we delete unwanted layers to keep the exported file size to a minimum
             logging.debug("  Preparing layer [{}]".format(layer_label))
-            if options.using_clones:
-                temporary_file_path = self.manage_layers_with_clones("", show_layer_ids)
-            else:
-                temporary_file_path = self.manage_layers("", show_layer_ids)
+            temporary_file_path = self.manage_layers("", show_layer_ids, options.hierarchical_layers, options.using_clones)
 
             # Export to file
             logging.debug("  Exporting [{}] as {}".format(layer_label, file_name))
@@ -184,6 +191,17 @@ class BatchExporter(inkex.Effect):
             if label_attrib_name not in layer.attrib:
                 continue
 
+            # Get layer parents, if any
+            parents = []
+            parent  = layer.getparent()
+            while True:
+                if label_attrib_name not in parent.attrib:
+                    break
+                # Found a parent layer
+                # logging.debug("parent: {}".format(parent.attrib["id"]))
+                parents.append(parent.attrib["id"])
+                parent = parent.getparent()
+
             # Skipping hidden layers
             if skip_hidden_layers and 'style' in layer.attrib:
                 if 'display:none' in layer.attrib['style']:
@@ -201,9 +219,10 @@ class BatchExporter(inkex.Effect):
                 layer_type = "export"
 
             logging.debug("  Use : [{}, {}]".format(layer_label, layer_type))
-            layers.append([layer_id, layer_label, layer_type])
+            layers.append([layer_id, layer_label, layer_type, parents])
 
         logging.debug("  TOTAL NUMBER OF LAYERS: {}\n".format(len(layers)))
+        logging.debug(layers)
         return layers
 
     def build_partial_command(self, options):
@@ -231,36 +250,47 @@ class BatchExporter(inkex.Effect):
 
         return command
 
-    def manage_layers(self, temporary_file_path, show_layer_ids):
+    # Delete/Hide unwanted layers to create a clean svg file that will be exported
+    def manage_layers(self, temporary_file_path, show_layer_ids, hierarchical_layers, hide_layers):
         # Create a copy of the current document
         doc = copy.deepcopy(self.document)
+        target_layer_found = False
+        target_layer = None
+        target_layer_id = show_layer_ids[0]
+
+        # For solo_layer option, all the layers are deleted/hidden to clean the document
+        # The target layer will be added as the only layer in the document
+        if not hierarchical_layers:
+            show_layer_ids = []
+
+        # Iterate through all layers in the document
         for layer in doc.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS):
             layer_id = layer.attrib["id"]
             layer_label = layer.attrib["{%s}label" % layer.nsmap['inkscape']]
 
-            # Display/Delete layers
+            # Store the target layer
+            if not target_layer_found and layer_id == target_layer_id:
+                target_layer = layer
+                target_layer_found = True
+
+            # Hide/Delete unwanted layers - hide for use_with_clones = TRUE
             if layer_id not in show_layer_ids:
-                layer.getparent().remove(layer)
-                logging.debug("    Deleting: [{}, {}]".format(layer_id, layer_label))
+                if hide_layers:
+                    layer.attrib['style'] = 'display:none'
+                    logging.debug("    Hiding: [{}, {}]".format(layer_id, layer_label))
+                else:
+                    layer.getparent().remove(layer)
+                    logging.debug("    Deleting: [{}, {}]".format(layer_id, layer_label))
 
-        # Save the data in a temporary file
-        with tempfile.NamedTemporaryFile(delete=False) as temporary_file:
-            logging.debug("    Creating temp file {}".format(temporary_file.name))
-            doc.write(temporary_file.name)
-            return temporary_file.name
+        # Add the target layer as the single layer in the document
+        # This option is used, only when all the layers are deleted above
+        if not hierarchical_layers:
+            root = doc.getroot()
+            if target_layer == None:
+                logging.debug("    Error: Target layer not found [{}]".format(show_layer_ids[0]))
+            target_layer.attrib['style'] = 'display:inline'
+            root.append(target_layer)
 
-    def manage_layers_with_clones(self, temporary_file_path, show_layer_ids):
-        # Create a copy of the current document
-        doc = copy.deepcopy(self.document)
-        for layer in doc.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS):
-            layer_id = layer.attrib["id"]
-            layer_label = layer.attrib["{%s}label" % layer.nsmap['inkscape']]
-
-            # Display/Delete layers
-            if layer_id not in show_layer_ids:
-                # layer.getparent().remove(layer)
-                layer.attrib['style'] = 'display:none'
-                logging.debug("    Hiding: [{}, {}]".format(layer_id, layer_label))
 
         # Save the data in a temporary file
         with tempfile.NamedTemporaryFile(delete=False) as temporary_file:
