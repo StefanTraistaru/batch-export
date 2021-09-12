@@ -176,7 +176,7 @@ class BatchExporter(inkex.Effect):
 
             # Export to file
             logging.debug("  Exporting [{}] as {}".format(layer_label, file_name))
-            self.export_to_file(command.copy(), temporary_file_path, destination_path)
+            self.export_to_file(command.copy(), temporary_file_path, destination_path, options.use_logging)
 
             # Clean up - delete the temporary file we have created
             os.remove(temporary_file_path)
@@ -310,19 +310,25 @@ class BatchExporter(inkex.Effect):
         file_name = file_name.replace("[NUM-5]", str(counter).zfill(5))
         return file_name
 
-    def export_to_file(self, command, svg_path, output_path):
+    def export_to_file(self, command, svg_path, output_path, use_logging):
         command.append('--export-filename=%s' % output_path)
         command.append(svg_path)
         logging.debug("{}\n".format(command))
 
         try:
-            with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
-                proc.wait(timeout=300)
+            if use_logging:
+                # If not piped, stdout and stderr will be showed in an inkscape dialog at the end.
+                # Inkscape export will create A LOT of warnings, most of them repeated, and I believe
+                # it is pointless to crowd the log file with these warnings.
+                with subprocess.Popen(command) as proc:
+                    proc.wait(timeout=300)
+            else:
+                with subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) as proc:
+                    proc.wait(timeout=300)
         except OSError:
             logging.debug('Error while exporting file {}.'.format(command))
             inkex.errormsg('Error while exporting file {}.'.format(command))
             exit()
-
 
 def _main():
     exporter = BatchExporter()
