@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
-import sys
+# import sys
 import inkex
 import os
 import subprocess
 import tempfile
-import shutil
+# import shutil
 import copy
 import logging
 
@@ -21,10 +21,9 @@ class Options():
         self.overwrite_files = self._str_to_bool(batch_exporter.options.overwrite_files)
         self.export_plain_svg = self._str_to_bool(batch_exporter.options.export_plain_svg)
         self.using_clones = self._str_to_bool(batch_exporter.options.using_clones)
-        hierarchical_layers = batch_exporter.options.hierarchical_layers
-        self.hierarchical_layers = False
-        if hierarchical_layers == "hierarchical":
-            self.hierarchical_layers = True
+        self.hierarchical_layers = batch_exporter.options.hierarchical_layers
+        if self.hierarchical_layers == "None":
+            self.hierarchical_layers = None
 
         self.export_pdf_version = batch_exporter.options.export_pdf_version
 
@@ -101,7 +100,7 @@ class BatchExporter(inkex.Effect):
         self.arg_parser.add_argument("--overwrite-files", action="store", type=str, dest="overwrite_files", default=False, help="")
         self.arg_parser.add_argument("--export-plain-svg", action="store", type=str, dest="export_plain_svg", default=False, help="")
         self.arg_parser.add_argument("--using-clones", action="store", type=str, dest="using_clones", default=False, help="")
-        self.arg_parser.add_argument("--hierarchical-layers", action="store", type=str, dest="hierarchical_layers", default="solo", help="Is this working?")
+        self.arg_parser.add_argument("--hierarchical-layers", action="store", type=str, dest="hierarchical_layers", default="None", help="Is this working?")
         self.arg_parser.add_argument("--export-pdf-version", action="store", type=str, dest="export_pdf_version", default="1.5", help="")
 
         # Export size page
@@ -139,6 +138,9 @@ class BatchExporter(inkex.Effect):
         # Get the layers from the current file
         layers = self.get_layers(options.skip_hidden_layers, options.use_background_layers)
 
+        # If hierarchical_layers == "aggregated" this keeps track of layers to aggregate
+        lower_layers = []
+
         # For each layer export a file
         for (layer_id, layer_label, layer_type, parents) in layers:
             if layer_type == "fixed":
@@ -146,9 +148,14 @@ class BatchExporter(inkex.Effect):
 
             show_layer_ids = [layer[0] for layer in layers if layer[2] == "fixed" or layer[0] == layer_id]
             # Append parent layers
-            if options.hierarchical_layers:
+            if options.hierarchical_layers == "hierarchical":
                 show_layer_ids.extend(parents)
                 logging.debug(show_layer_ids)
+            elif options.hierarchical_layers == "aggregated":
+                show_layer_ids.extend(lower_layers)
+                logging.debug(show_layer_ids)
+
+            lower_layers.append(layer_id)
 
             # Create the output folder if it doesn't exist
             if not os.path.exists(os.path.join(options.output_path)):
@@ -279,7 +286,7 @@ class BatchExporter(inkex.Effect):
 
         # Add the target layer as the single layer in the document
         # This option is used, only when all the layers are deleted above
-        if not hierarchical_layers:
+        if hierarchical_layers is None:
             root = doc.getroot()
             if target_layer == None:
                 logging.debug("    Error: Target layer not found [{}]".format(show_layer_ids[0]))
