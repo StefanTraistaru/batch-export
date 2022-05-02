@@ -25,7 +25,8 @@
         <item value="1.5">1.5</item>
       </param>
       <param name="hierarchical-layers" type="enum" gui-text="Layer export mode:" indent="1">
-        <item value="solo">Export each layer as a single layer</item>
+        <item value="None">Export each layer as a single layer</item>
+        <item value="aggregated">Aggregate lower layers as background layers</item>
         <item value="hierarchical">Use parent layers as background layers</item>
       </param>
 

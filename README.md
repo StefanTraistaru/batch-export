@@ -48,7 +48,8 @@ After the extension is installed, it can be found in the **Extensions** menu, **
     * If you want to export the files in PDF format you can choose the PDF version to be used(1.4 or 1.5).
     * Choose a layer export mode (this feature is independent from the **Use background layers**):
         * Export each layer as a single layer - the export file will contain only the objects from this layer
-        * Use parent layers as background layers - the export file will contain the objects from the parent layers as well
+        * Aggregate lower layers as background layers - the export file will contain the objects from the lower layers as well
+        * Use parent layers as background layers - the export file will contain the objects from the parent layers as well (drag and drop a layer onto another layer in inkscape to create hierarchy)
 
 * Other options
     * Check the **Use background layers** options if you want to have one or more layers that will appear in all exports. You also need to name these layers with a fixed tag at the beginning.
